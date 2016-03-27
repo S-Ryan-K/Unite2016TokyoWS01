@@ -18,7 +18,7 @@ public class Purchaser : MonoBehaviour, IStoreListener
 	// つまり、IOS で"consumable"を購入するとした際、Unity IAPではちゃんと"test.services.purchasing.consumabl"と変換して送ってくれる
 	// なので開発者はどのストアであっても気にせず同一の製品IDでやり取りできる
 
-	// Product identifiers for all products capable of being purchased: "convenience" general identifiers for use with Purchasing, and their store-specific identifier counterparts 
+	// Product identifiers for all products capable of being purchased: "convenience" general identifiers for use with Purchasing, and their store-specific identifier counterparts
 	// for use with and outside of Unity Purchasing. Define store-specific identifiers also on each platform's publisher dashboard (iTunes Connect, Google Play Developer Console, etc.)​
 	// 製品IDは全ての購入で利用可能な、便利な汎用IDであり、各ストア特有IDは反対にUnity Purchaseing以外のIDである
 	// 各ストア特有IDは各プラットフォームのダッシュボードで設定すること
@@ -46,7 +46,7 @@ public class Purchaser : MonoBehaviour, IStoreListener
 		}
 	}
 
-	public void InitializePurchasing() 
+	public void InitializePurchasing()
 	{
 		// If we have already connected to Purchasing ...
 		// Purchasing へ既に繋がっているんだったら...
@@ -59,8 +59,8 @@ public class Purchaser : MonoBehaviour, IStoreListener
 
 		var module = StandardPurchasingModule.Instance();
 		module.useMockBillingSystem = true; // Microsoft
-		// The FakeStore supports: no-ui (always succeeding), basic ui (purchase pass/fail), and 
-		// developer ui (initialization, purchase, failure code setting). These correspond to 
+		// The FakeStore supports: no-ui (always succeeding), basic ui (purchase pass/fail), and
+		// developer ui (initialization, purchase, failure code setting). These correspond to
 		// the FakeStoreUIMode Enum values passed into StandardPurchasingModule.useFakeStoreUIMode.
 		// フェイクStoreは以下のことをサポートしている： UIなし（いつも成功する）、基本的なUI（購入が成功/失敗）
 		// 開発者向けUI（初期化、購入、失敗時の設定）。　これらは FakeStoreUIMode の Enum値と対応している
@@ -142,7 +142,7 @@ public class Purchaser : MonoBehaviour, IStoreListener
 				// ... 汎用製品IDと、購入システムの製品群からProduct参照を取得する。
 				Product product = m_StoreController.products.WithID(productId);
 
-				// If the look up found a product for this device's store and that product is ready to be sold ... 
+				// If the look up found a product for this device's store and that product is ready to be sold ...
 				// もしデバイスのストアで製品が見つかったら、販売される用意が出来たということになる
 				if (product != null && product.availableToPurchase)
 				{
@@ -154,7 +154,7 @@ public class Purchaser : MonoBehaviour, IStoreListener
 				// Otherwise ...
 				else
 				{
-					// ... report the product look-up failure situation  
+					// ... report the product look-up failure situation
 					// ... さもなければ、失敗シチュエーションのレポート
 					Debug.Log ("BuyProductID: FAIL. Not purchasing product, either is not found or is not available for purchase");
 				}
@@ -190,9 +190,9 @@ public class Purchaser : MonoBehaviour, IStoreListener
 			return;
 		}
 
-		// If we are running on an Apple device ... 
+		// If we are running on an Apple device ...
 		// Apple なら
-		if (Application.platform == RuntimePlatform.IPhonePlayer || 
+		if (Application.platform == RuntimePlatform.IPhonePlayer ||
 			Application.platform == RuntimePlatform.OSXPlayer)
 		{
 			// ... begin restoring purchases
@@ -219,7 +219,7 @@ public class Purchaser : MonoBehaviour, IStoreListener
 	}
 
 
-	//  
+	//
 	// --- IStoreListener
 	//
 
@@ -246,7 +246,7 @@ public class Purchaser : MonoBehaviour, IStoreListener
 	}
 
 
-	public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args) 
+	public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs args)
 	{
 		//@Angelo: here is the result of a successful purchase of a consumable (100 coins, in our case), in the Editor once you press the "Buy" button you'll immediately see the
 		//"ProcessPurchase: PASS" message on the Console. On a device you would see the OS pop-up confirming the purchase
@@ -258,8 +258,10 @@ public class Purchaser : MonoBehaviour, IStoreListener
 		{
 			Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));//If the consumable item has been successfully purchased, add 100 coins to the player's in-game score.ScoreManager.score += 100;
 			// ここに消費アイテムを買った時の処理を入れる
-			// TODO: 
-			
+			// TODO:
+			PlayerPrefs.SetInt("CoinNum", PlayerPrefs.GetInt("CoinNum") + 100);
+			GameObject.Find("CoinNumUI").GetComponent<ScoreManager>().UpdateCoin();
+
 		}
 
 		//@Angelo: Same here for a non-consumable (in our chase, the old lady character)
@@ -269,12 +271,13 @@ public class Purchaser : MonoBehaviour, IStoreListener
 		{
 			Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
 			// ここに非消費アイテムを買った時の処理を入れる
-			// TODO: 
+			// TODO:
+			PlayerPrefs.SetInt("NewCharaUnlocked", 1);
 		}// Or ... a subscription product has been purchased by this user.
 		else if (String.Equals(args.purchasedProduct.definition.id, kProductIDSubscription, StringComparison.Ordinal))
 		{
 			Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));}// Or ... an unknown product has been purchased by this user. Fill in additional products here.
-		else 
+		else
 		{
 			Debug.Log(string.Format("ProcessPurchase: FAIL. Unrecognized product: '{0}'", args.purchasedProduct.definition.id));}// Return a flag indicating wither this product has completely been received, or if the application needs to be reminded of this purchase at next app launch. Is useful when saving purchased products to the cloud, and when that save is delayed.
 		return PurchaseProcessingResult.Complete;

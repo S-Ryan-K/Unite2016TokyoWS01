@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 // TODO:
 // namespace を追加
+using UnityEngine.Analytics;
+
 
 public class GoalChecker : MonoBehaviour {
 
@@ -46,9 +48,9 @@ public class GoalChecker : MonoBehaviour {
 		if ( isGoaled == false && isStarted ) {
 			nowTime = DateTime.Now - startTime;
 
-			displayTime = String.Format("{0:00}:{1:00}:{2:000}", 
-				nowTime.Minutes, 
-				nowTime.Seconds, 
+			displayTime = String.Format("{0:00}:{1:00}:{2:000}",
+				nowTime.Minutes,
+				nowTime.Seconds,
 				nowTime.Milliseconds);
 			if ( nowTime.Minutes >= 1 ) {
 				goalTimeSec = 60;
@@ -85,6 +87,13 @@ public class GoalChecker : MonoBehaviour {
 
 				// CustomEvent を作る
 				// TODO:
+				Analytics.CustomEvent("Goal", new Dictionary<string, object>
+					{
+						{ "scene ID", SceneManager.GetActiveScene().buildIndex },
+						{ "coins", ball.count },
+						{ "time sec",  goalTimeSec },
+						{ "time bar",  "TIME:" + String.Format("{0:00}", goalTimeSec) },
+					});
 			}
 		}
 	}
@@ -110,8 +119,8 @@ public class GoalChecker : MonoBehaviour {
 
 	public void Tweet()
 	{
-		Application.OpenURL("http://twitter.com/intent/tweet?text=" + 
-			WWW.EscapeURL("ユニティちゃんボウルロウルで Time:" + displayTime + 
+		Application.OpenURL("http://twitter.com/intent/tweet?text=" +
+			WWW.EscapeURL("ユニティちゃんボウルロウルで Time:" + displayTime +
 				" " + ball.countText.text + " 出しました https://build.cloud.unity3d.com/share/-kP0o8Piy-/webplayer/"));
 	}
 

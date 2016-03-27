@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Assertions;
 
-public class CharaSelectController : MonoBehaviour 
+public class CharaSelectController : MonoBehaviour
 {
 	public GameObject characterSelectionPanel;
 	public GameObject newOneUI;
@@ -14,7 +14,7 @@ public class CharaSelectController : MonoBehaviour
 
 	private Button newOneButton;
 	// Use this for initialization
-	void Awake () 
+	void Awake ()
 	{
 		newOneButton = newOneUI.GetComponent<Button>();
 		playerObj.SetActive(false);
@@ -23,6 +23,14 @@ public class CharaSelectController : MonoBehaviour
 
 		// 非消費アイテムを買ったか否かで表示非表示の判定
 		// TODO:
+		if (PlayerPrefs.GetInt("NewCharaUnlocked") == 0)
+		{
+			newOneButton.interactable = false;
+		}
+		else
+		{
+			newOneButton.interactable = true;
+		}
 	}
 
 	void Start()
